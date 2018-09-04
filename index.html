@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>butts</title>
+  <style>
+    html, body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #222222;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+    }
+    img {
+      width: 80%;
+      border-radius: 2px;
+      box-shadow: 0 0 100px #000000;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <audio id="fart">
+    <source src="fart.mp3" />
+  </audio>
+  <img onclick="fart()" src="godbutt.jpg" />
+  <script>
+    const player = document.getElementById('fart')
+    const fart = () => {
+      const clone = player.cloneNode(true)
+      clone.play().then(() => clone.remove())
+    }
+  </script>
+</body>
+</html>
