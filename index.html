@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>butts</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
   <style>
     html, body {
       display: flex;
@@ -13,21 +14,28 @@
       padding: 0;
       margin: 0;
     }
-    img {
+    #butt {
       width: 80%;
       border-radius: 2px;
       box-shadow: 0 0 100px #000000;
       cursor: pointer;
     }
-    img:active {
+    #butt.touched {
       margin-top: 5px;
       user-select: none;
     }
   </style>
 </head>
 <body>
-  <img id="god" onclick="fart()" src="godbutt.jpg" />
+  <img id="butt" onclick="fart()" src="godbutt.jpg" />
   <script>
+    const butt = document.getElementById('butt')
+    butt.addEventListener('touchstart', () => butt.classList.add('touched'))
+    butt.addEventListener('touchend', () => butt.classList.remove('touched'))
+    butt.addEventListener('touchcancel', () => butt.classList.remove('touched'))
+    butt.addEventListener('mousedown', () => butt.classList.add('touched'))
+    butt.addEventListener('mouseup', () => butt.classList.remove('touched'))
+
     let audioBuffer = null
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)()
 
@@ -35,7 +43,7 @@
     request.open('GET', 'fart.mp3', true)
     request.responseType = 'arraybuffer'
     request.onload = () => {
-      audioCtx.decodeAudioData(request.response, (buffer) => {
+      audioCtx.decodeAudioData(request.response, buffer => {
         audioBuffer = buffer
       })
     }
