@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>butts</title>
-  <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
+  <meta name='viewport' content='width=device-width, user-scalable=no' />
   <style>
     html, body {
       display: flex;
@@ -19,6 +19,7 @@
       border-radius: 2px;
       box-shadow: 0 0 100px #000000;
       cursor: pointer;
+      touch-action: manipulation;
     }
     #butt.touched {
       margin-top: 5px;
@@ -27,17 +28,53 @@
   </style>
 </head>
 <body>
-  <img id="butt" onclick="fart()" src="godbutt.jpg" />
+  <img id="butt" src="godbutt.jpg" />
   <script>
     const butt = document.getElementById('butt')
-    butt.addEventListener('touchstart', () => butt.classList.add('touched'))
-    butt.addEventListener('touchend', () => butt.classList.remove('touched'))
-    butt.addEventListener('touchcancel', () => butt.classList.remove('touched'))
-    butt.addEventListener('mousedown', () => butt.classList.add('touched'))
-    butt.addEventListener('mouseup', () => butt.classList.remove('touched'))
+    const clench = () => {
+      butt.classList.add('touched')
+      audioCtx.resume()
+      fart()
+    }
+    const release = () => {
+      butt.classList.remove('touched')
+    }
+
+    butt.addEventListener('touchstart', clench)
+    butt.addEventListener('touchend', release)
+    butt.addEventListener('touchcancel', release)
+    butt.addEventListener('mousedown', clench)
+    butt.addEventListener('mouseup', release)
 
     let audioBuffer = null
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+    const AudioContext = window.AudioContext || window.webkitAudioContext
+    const audioCtx = new AudioContext()
+
+    const fixAudioContext = (e) => {
+      // Create empty buffer
+      const buffer = audioCtx.createBuffer(1, 1, 22050)
+      const source = audioCtx.createBufferSource()
+      source.buffer = buffer
+      // Connect to output (speakers)
+      source.connect(audioCtx.destination)
+      // Play sound
+      if (source.start) {
+        source.start(0)
+      } else if (source.play) {
+        source.play(0)
+      } else if (source.noteOn) {
+        source.noteOn(0)
+      }
+
+      // Remove events
+      document.removeEventListener('touchstart', fixAudioContext)
+      document.removeEventListener('touchend', fixAudioContext)
+    }
+    // iOS 6-8
+    document.addEventListener('touchstart', fixAudioContext)
+    // iOS 9
+    document.addEventListener('touchend', fixAudioContext)
+
 
     const request = new XMLHttpRequest()
     request.open('GET', 'fart.mp3', true)
@@ -47,14 +84,16 @@
         audioBuffer = buffer
       })
     }
+    request.onerror = (e) => console.log(e)
     request.send()
 
     const fart = () => {
       if (!audioBuffer) return
+      audioCtx.resume()
       const source = audioCtx.createBufferSource()
       source.buffer = audioBuffer
-      source.playbackRate.value = Math.random() * 1.2 + 0.4
       source.connect(audioCtx.destination)
+      source.playbackRate.value = Math.random() * 1.2 + 0.4
       source.start()
     }
   </script>
