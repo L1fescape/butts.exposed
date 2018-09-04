@@ -19,13 +19,17 @@
       box-shadow: 0 0 100px #000000;
       cursor: pointer;
     }
+    img:active {
+      padding-top: 5px;
+      user-select: none;
+    }
   </style>
 </head>
 <body>
   <audio id="fart">
     <source src="fart.mp3" />
   </audio>
-  <img onclick="fart()" src="godbutt.jpg" />
+  <img id="god" onclick="fart()" src="godbutt.jpg" />
   <script>
     const player = document.getElementById('fart')
     const fart = () => {
