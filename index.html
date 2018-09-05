@@ -31,27 +31,25 @@
   <img id="butt" src="godbutt.jpg" />
   <script>
     const AudioContext = window.AudioContext || window.webkitAudioContext
+    const context = new AudioContext()
+    context.onstatechange = function() {
+      console.log(arguments)
+    }
 
     const butt = document.getElementById('butt')
     const clench = () => {
       butt.classList.add('touched')
       fart()
     }
-    const release = () => {
-      butt.classList.remove('touched')
-    }
-
-    butt.addEventListener('touchstart', clench)
+    const release = () => butt.classList.remove('touched')
+    butt.addEventListener('touchstart', clench, { passive: true })
     butt.addEventListener('touchend', release)
     butt.addEventListener('touchcancel', release)
     butt.addEventListener('mousedown', clench)
     butt.addEventListener('mouseup', release)
 
-    let context = null
     let audioBuffer = null
     window.onload = () => {
-      context = new AudioContext()
-
       const request = new XMLHttpRequest()
       request.open('GET', 'fart.mp3', true)
       request.responseType = 'arraybuffer'
@@ -67,6 +65,7 @@
     }
 
     const fart = () => {
+      console.log(context.state)
       if (!audioBuffer) return
       context.resume().then(() => {
         const source = context.createBufferSource()
