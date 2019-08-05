@@ -48,8 +48,8 @@
     butt.addEventListener('mousedown', clench)
     butt.addEventListener('mouseup', release)
 
-    let audioBuffer = null
-    window.onload = () => {
+    const loadAudio = () => new Promise((resolve, reject) => {
+      if (audioBuffer) return resolve()
       const request = new XMLHttpRequest()
       request.open('GET', 'fart.mp3', true)
       request.responseType = 'arraybuffer'
@@ -57,17 +57,25 @@
         context.resume().then(() => {
           context.decodeAudioData(request.response, buffer => {
             audioBuffer = buffer
+            resolve()
           })
         })
       }
-      request.onerror = (e) => console.log(e)
+      request.onerror = (e) => {
+        console.log(e)
+        reject(e)
+      }
       request.send()
-    }
+    })
+
+    let audioBuffer = null
+    window.onload = () => loadAudio()
 
     const fart = () => {
-      console.log(context.state)
-      if (!audioBuffer) return
-      context.resume().then(() => {
+      Promise.all([
+        loadAudio(),
+        context.resume(),
+      ]).then(() => {
         const source = context.createBufferSource()
         source.buffer = audioBuffer
         source.connect(context.destination)
